@@ -1,14 +1,20 @@
 import { Routes, Route } from "react-router-dom";
 import { useState, useRef } from "react";
 
-import Navbar from "./components/Navbar";
-import CategoryBar from "./components/CategoryBar";
-import Home from "./pages/Home";
-import Products from "./pages/Products";
-import Cart from "./pages/Cart";
-import ProductDetails from "./pages/ProductDetails";
-import FlyingImage from "./components/FlyingImage";
-import CartDrawer from "./components/CartDrawer";
+import Navbar from "./components/Navbar.jsx";
+import CategoryBar from "./components/CategoryBar.jsx";
+import Home from "./pages/Home.jsx";
+import Products from "./pages/Products.jsx";
+import Cart from "./pages/Cart.jsx";
+import ProductDetails from "./pages/ProductDetails.jsx";
+import CartDrawer from "./components/CartDrawer.jsx";
+import FlyingImage from "./components/FlyingImage.jsx";
+
+// Auth
+import Dashboard from "./pages/Dashboard.jsx";
+import Login from "./pages/Login.jsx";
+import Checkout from "./pages/Checkout.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 export default function App() {
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -42,6 +48,7 @@ export default function App() {
 
       <main className="bg-gray-100 min-h-screen pt-20">
         <Routes>
+          {/* Public Routes */}
           <Route
             path="/"
             element={<Home selectedCategory={selectedCategory} onFly={handleFly} />}
@@ -49,6 +56,27 @@ export default function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/product/:id" element={<ProductDetails onFly={handleFly} />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/login" element={<Login />} />
+
+          {/* Checkout */}
+          <Route
+            path="/checkout"
+            element={
+              <ProtectedRoute>
+                <Checkout />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Protected Dashboard */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </main>
 
