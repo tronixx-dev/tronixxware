@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import productRoutes from "./routes/productRoutes.js"; 
+import productRoutes from "./routes/productRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 
 dotenv.config();
@@ -15,8 +15,8 @@ const app = express();
 
 // --- Middleware ---
 app.use(cors());
-app.use(express.json()); // parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // optional, parse form data
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // --- Serve static files for uploads ---
 const __filename = fileURLToPath(import.meta.url);
@@ -30,18 +30,17 @@ app.use("/api/auth", authRoutes);
 // --- MongoDB Connection ---
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.MONGO_URI);
     console.log("MongoDB connected ✅");
   } catch (err) {
     console.error("MongoDB connection error ❌", err);
-    process.exit(1); // Exit process if DB fails
+    process.exit(1);
   }
 };
 connectDB();
 
 // --- Start Server ---
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT} 🚀`));
+app.listen(PORT, () =>
+  console.log(`Server running on port ${PORT} 🚀`)
+);
