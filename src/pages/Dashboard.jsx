@@ -1,62 +1,76 @@
-import React, { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext.jsx";
+// src/pages/Dashboard.jsx
+import React, { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
-  useEffect(() => {
-    if (!user) return;
+  // Product form state
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState("Electronics");
+  const [price, setPrice] = useState("");
+  const [image, setImage] = useState("");
+  const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
-    const fetchOrders = async () => {
-      try {
-        setLoading(true);
-        const { data } = await axios.get(
-          "http://localhost:5000/api/orders/myorders",
-          {
-            headers: { Authorization: `Bearer ${user.token}` },
-          }
-        );
-        setOrders(data);
-      } catch (err) {
-        console.error(err);
-        setError(err.response?.data?.message || "Failed to fetch orders");
-      } finally {
-        setLoading(false);
+  const handleAddProduct = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/products", // backend endpoint
+        {
+          name,
+          category,
+          price: Number(price),
+          image,
+          description,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`, // auth token from login
+          },
+        }
+      );
+
+      if (res.status === 201) {
+        setMessage("Product added successfully!");
+        // Clear form
+        setName("");
+        setCategory("Electronics");
+        setPrice("");
+        setImage("");
+        setDescription("");
       }
-    };
-
-    fetchOrders();
-  }, [user]);
+    } catch (err) {
+      console.error(err);
+      setMessage(err.response?.data?.message || "Failed to add product");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!user) {
-    return (
-      <div className="p-8">
-        <p>You are not logged in.</p>
-        <button
-          onClick={() => navigate("/login")}
-          className="bg-blue-600 text-white px-4 py-2 rounded mt-4"
-        >
-          Login
-        </button>
-      </div>
-    );
+    return <p>You are not logged in.</p>;
   }
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
+    <div className="p-8 max-w-2xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+
+      <div className="mb-6 flex justify-between items-center">
+        <span className="font-semibold">{user.name}</span>
         <button
           onClick={handleLogout}
           className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
@@ -65,50 +79,83 @@ const Dashboard = () => {
         </button>
       </div>
 
-      <p className="mb-6">
-        Welcome, <span className="font-semibold">{user.name}</span>!
-      </p>
+      <h2 className="text-2xl font-bold mb-4">Add Product</h2>
 
-      <h2 className="text-2xl font-semibold mb-4">Your Orders</h2>
-
-      {loading ? (
-        <p>Loading orders...</p>
-      ) : error ? (
-        <p className="text-red-600">{error}</p>
-      ) : orders.length === 0 ? (
-        <p>You have no orders yet.</p>
-      ) : (
-        <div className="space-y-4">
-          {orders.map((order) => (
-            <div
-              key={order._id}
-              className="bg-white p-4 rounded shadow border-l-4 border-blue-600"
-            >
-              <div className="flex justify-between mb-2">
-                <span className="font-bold">Order ID:</span>
-                <span>{order._id}</span>
-              </div>
-              <div className="flex justify-between mb-2">
-                <span className="font-bold">Total:</span>
-                <span>₦{order.totalPrice.toLocaleString()}</span>
-              </div>
-              <div className="mb-2">
-                <span className="font-bold">Items:</span>
-                <ul className="ml-4 list-disc">
-                  {order.orderItems.map((item) => (
-                    <li key={item.product._id || item.product}>
-                      {item.name} x {item.qty} (₦{item.price.toLocaleString()})
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="text-sm text-gray-500">
-                Placed on: {new Date(order.createdAt).toLocaleString()}
-              </div>
-            </div>
-          ))}
+      {message && (
+        <div
+          className={`mb-4 p-2 rounded ${
+            message.includes("success") ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
+          }`}
+        >
+          {message}
         </div>
       )}
+
+      <form className="space-y-4" onSubmit={handleAddProduct}>
+        <div>
+          <label className="block font-semibold mb-1">Name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full border p-2 rounded"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block font-semibold mb-1">Category</label>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full border p-2 rounded"
+          >
+            <option>Electronics</option>
+            <option>Fashion</option>
+            <option>Toys</option>
+            <option>Home</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block font-semibold mb-1">Price (₦)</label>
+          <input
+            type="number"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            className="w-full border p-2 rounded"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block font-semibold mb-1">Image URL</label>
+          <input
+            type="text"
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
+            className="w-full border p-2 rounded"
+          />
+        </div>
+
+        <div>
+          <label className="block font-semibold mb-1">Description</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full border p-2 rounded"
+            rows={4}
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          disabled={loading}
+        >
+          {loading ? "Adding..." : "Add Product"}
+        </button>
+      </form>
     </div>
   );
 };

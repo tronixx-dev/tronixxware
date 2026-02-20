@@ -1,12 +1,13 @@
 // routes/productRoutes.js
 import express from "express";
-import Product from "../models/productModel.js";
-import { upload } from "../middleware/uploadMiddleware.js";
-import { protect } from "../middleware/authMiddleware.js";
+import Product from "../models/productModel.js"; // your model
+import { protect } from "../middleware/authMiddleware.js"; // protects routes for logged-in users
 
 const router = express.Router();
 
+// ---------------------------
 // GET all products
+// ---------------------------
 router.get("/", async (req, res) => {
   try {
     const products = await Product.find();
@@ -16,33 +17,39 @@ router.get("/", async (req, res) => {
   }
 });
 
-// GET single product
+// ---------------------------
+// GET single product by ID
+// ---------------------------
 router.get("/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ message: "Product not found" });
+    if (!product)
+      return res.status(404).json({ message: "Product not found" });
     res.json(product);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
+// ---------------------------
 // POST new product (admin only)
-router.post("/", protect, upload.single("image"), async (req, res) => {
+// ---------------------------
+router.post("/", protect, async (req, res) => {
   try {
-    if (!req.user.isAdmin) return res.status(403).json({ message: "Forbidden" });
+    // Only allow admin to add products
+    if (!req.user || !req.user.isAdmin) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
 
-    const { name, price, category, inStock } = req.body;
-    if (!name || !price) return res.status(400).json({ message: "Name and price are required" });
-
-    const image = req.file ? `/uploads/${req.file.filename}` : "https://via.placeholder.com/400";
+    const { name, price, category, image, inStock, description } = req.body;
 
     const newProduct = new Product({
       name,
       price,
-      category,
-      inStock: inStock !== "false",
-      image,
+      category: category || "General",
+      image: image || "https://via.placeholder.com/400",
+      inStock: inStock !== false, // default true
+      description: description || "",
     });
 
     const savedProduct = await newProduct.save();

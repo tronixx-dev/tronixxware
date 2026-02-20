@@ -86,20 +86,12 @@ export default function Navbar({ cartIconRef }) {
             </button>
           </div>
         ) : (
-          <div className="flex gap-2">
-            <Link
-              to="/login"
-              className="bg-green-600 px-3 py-1 rounded hover:bg-green-700"
-            >
-              Login
-            </Link>
-            <Link
-              to="/register"
-              className="bg-blue-600 px-3 py-1 rounded hover:bg-blue-700"
-            >
-              Register
-            </Link>
-          </div>
+          <Link
+            to="/login"
+            className="bg-green-600 px-3 py-1 rounded hover:bg-green-700"
+          >
+            Login
+          </Link>
         )}
       </div>
     </nav>

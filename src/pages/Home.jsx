@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+// src/pages/Home.jsx
 import { useCart } from "../context/CartContext";
+import { useEffect, useState, useRef } from "react";
 import { getAllProducts } from "../api/productApi";
 import ProductCard from "../components/ProductCard";
 
@@ -9,18 +10,18 @@ export default function Home({ selectedCategory, onFly }) {
   const [loading, setLoading] = useState(true);
   const productSectionRef = useRef(null);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const data = await getAllProducts(); // Fetch from backend
-        setProducts(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchProducts = async () => {
+    try {
+      const data = await getAllProducts();
+      setProducts(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchProducts();
   }, []);
 
@@ -28,13 +29,7 @@ export default function Home({ selectedCategory, onFly }) {
     productSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  if (loading) {
-    return (
-      <div className="text-center mt-20 text-gray-400">
-        Loading products...
-      </div>
-    );
-  }
+  if (loading) return <div className="text-center mt-20 text-gray-400">Loading products...</div>;
 
   return (
     <div className="w-full">
