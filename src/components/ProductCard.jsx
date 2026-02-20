@@ -3,8 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 
-export default function ProductCard({ product, onFly }) {
-  const { addToCart } = useCart();
+export default function ProductCard({ product, onFly, addToCart }) {
   const imgRef = useRef(null);
 
   const handleAddToCart = () => {
@@ -25,11 +24,12 @@ export default function ProductCard({ product, onFly }) {
       <Link to={`/product/${product._id}`}>
         <img
           ref={imgRef}
-          src={product.image || "/placeholder.png"} // fallback if image missing
+          src={product.image || product.images?.[0] || "/placeholder.png"}
           alt={product.name || "Product"}
           className="h-40 object-cover mb-3 rounded"
         />
       </Link>
+
       <h3 className="font-semibold">{product.name || "Unnamed Product"}</h3>
       <p className="text-gray-600 mb-2">
         ₦{product.price != null ? product.price.toLocaleString() : "N/A"}

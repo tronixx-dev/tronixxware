@@ -12,7 +12,7 @@ export default function Home({ selectedCategory, onFly }) {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data = await getAllProducts();
+        const data = await getAllProducts(); // Fetch from backend
         setProducts(data);
       } catch (err) {
         console.error(err);
@@ -20,6 +20,7 @@ export default function Home({ selectedCategory, onFly }) {
         setLoading(false);
       }
     };
+
     fetchProducts();
   }, []);
 
@@ -29,7 +30,9 @@ export default function Home({ selectedCategory, onFly }) {
 
   if (loading) {
     return (
-      <div className="text-center mt-20 text-gray-400">Loading products...</div>
+      <div className="text-center mt-20 text-gray-400">
+        Loading products...
+      </div>
     );
   }
 

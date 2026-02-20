@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import ProductCard from "../components/ProductCard"; // use ProductCard directly
-import { getAllProducts } from "../api/productApi";
+import React, { useEffect, useState } from "react";
 import { useCart } from "../context/CartContext";
+import { getAllProducts } from "../api/productApi";
+import ProductCard from "../components/ProductCard";
 
 export default function Products({ onFly }) {
   const [products, setProducts] = useState([]);
@@ -11,7 +11,7 @@ export default function Products({ onFly }) {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data = await getAllProducts();
+        const data = await getAllProducts(); // Fetch from backend
         setProducts(data);
       } catch (err) {
         console.error("Failed to fetch products:", err);
@@ -28,6 +28,14 @@ export default function Products({ onFly }) {
       <div className="text-center mt-20 text-gray-400">
         Loading products...
       </div>
+    );
+  }
+
+  if (products.length === 0) {
+    return (
+      <p className="text-center text-gray-400 mt-10">
+        No products available.
+      </p>
     );
   }
 

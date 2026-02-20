@@ -1,3 +1,4 @@
+// models/Order.js
 import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema(
@@ -14,6 +15,13 @@ const orderSchema = new mongoose.Schema(
     ],
     totalPrice: { type: Number, required: true },
     isPaid: { type: Boolean, default: false },
+    paidAt: { type: Date },
+    paymentResult: {
+      id: String,
+      status: String,
+      update_time: String,
+      email_address: String,
+    },
   },
   { timestamps: true }
 );

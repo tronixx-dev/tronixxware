@@ -1,3 +1,4 @@
+// src/components/Navbar.jsx
 import { useCartDrawer } from "../context/CartDrawerContext";
 import { useCart } from "../context/CartContext";
 import { NavLink, Link, useNavigate } from "react-router-dom";
@@ -31,14 +32,14 @@ export default function Navbar({ cartIconRef }) {
       <div className="flex items-center gap-6">
         <NavLink
           to="/"
-          className={({ isActive }) => isActive ? "underline" : ""}
+          className={({ isActive }) => (isActive ? "underline" : "")}
         >
           Home
         </NavLink>
 
         <NavLink
           to="/products"
-          className={({ isActive }) => isActive ? "underline" : ""}
+          className={({ isActive }) => (isActive ? "underline" : "")}
         >
           Products
         </NavLink>
@@ -47,7 +48,7 @@ export default function Navbar({ cartIconRef }) {
         {user && (
           <NavLink
             to="/dashboard"
-            className={({ isActive }) => isActive ? "underline" : ""}
+            className={({ isActive }) => (isActive ? "underline" : "")}
           >
             Dashboard
           </NavLink>
@@ -85,12 +86,20 @@ export default function Navbar({ cartIconRef }) {
             </button>
           </div>
         ) : (
-          <Link
-            to="/login"
-            className="bg-green-600 px-3 py-1 rounded hover:bg-green-700"
-          >
-            Login
-          </Link>
+          <div className="flex gap-2">
+            <Link
+              to="/login"
+              className="bg-green-600 px-3 py-1 rounded hover:bg-green-700"
+            >
+              Login
+            </Link>
+            <Link
+              to="/register"
+              className="bg-blue-600 px-3 py-1 rounded hover:bg-blue-700"
+            >
+              Register
+            </Link>
+          </div>
         )}
       </div>
     </nav>

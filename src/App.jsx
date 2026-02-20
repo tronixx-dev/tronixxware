@@ -1,3 +1,4 @@
+// src/App.jsx
 import { Routes, Route } from "react-router-dom";
 import { useState, useRef } from "react";
 
@@ -13,6 +14,7 @@ import FlyingImage from "./components/FlyingImage.jsx";
 // Auth
 import Dashboard from "./pages/Dashboard.jsx";
 import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
 import Checkout from "./pages/Checkout.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
@@ -53,10 +55,11 @@ export default function App() {
             path="/"
             element={<Home selectedCategory={selectedCategory} onFly={handleFly} />}
           />
-          <Route path="/products" element={<Products />} />
+          <Route path="/products" element={<Products onFly={handleFly} />} />
           <Route path="/product/:id" element={<ProductDetails onFly={handleFly} />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
           {/* Checkout */}
           <Route

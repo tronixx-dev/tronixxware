@@ -1,21 +1,18 @@
 import { useCart } from "../context/CartContext";
 import { useCartDrawer } from "../context/CartDrawerContext";
+import { useNavigate } from "react-router-dom";
 
 export default function CartDrawer() {
   const { cart, removeFromCart, updateQty } = useCart();
   const { open, setOpen } = useCartDrawer();
+  const navigate = useNavigate();
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
     <>
       {/* Overlay */}
-      {open && (
-        <div
-          onClick={() => setOpen(false)}
-          className="fixed inset-0 bg-black/60 z-[115]" // overlay above page & navbar
-        />
-      )}
+      {open && <div onClick={() => setOpen(false)} className="fixed inset-0 bg-black/60 z-[115]" />}
 
       {/* Drawer */}
       <div
@@ -31,32 +28,30 @@ export default function CartDrawer() {
 
         {/* Cart Items */}
         <div className="p-5 space-y-4 overflow-y-auto h-[calc(100%-160px)]">
-          {cart.length === 0 && (
-            <p className="text-white/60">Your cart is empty</p>
-          )}
+          {cart.length === 0 && <p className="text-white/60">Your cart is empty</p>}
 
           {cart.map(item => (
-            <div key={item.id} className="flex gap-3 border-b border-white/10 pb-3">
-              <img src={item.image} className="w-16 h-16 object-cover rounded" />
+            <div key={item._id || item.id} className="flex gap-3 border-b border-white/10 pb-3">
+              <img src={item.image || item.images?.[0] || "/placeholder.png"} className="w-16 h-16 object-cover rounded" />
               <div className="flex-1">
-                <h4 className="text-sm font-medium">{item.title}</h4>
+                <h4 className="text-sm font-medium">{item.name}</h4>
                 <p className="text-xs text-white/60">₦{item.price.toLocaleString()}</p>
                 <div className="flex items-center gap-2 mt-2">
                   <button
-                    onClick={() => updateQty(item.id, Math.max(1, item.quantity - 1))}
+                    onClick={() => updateQty(item._id || item.id, Math.max(1, item.quantity - 1))}
                     className="px-2 bg-white/10 rounded"
                   >
                     -
                   </button>
                   <span>{item.quantity}</span>
                   <button
-                    onClick={() => updateQty(item.id, item.quantity + 1)}
+                    onClick={() => updateQty(item._id || item.id, item.quantity + 1)}
                     className="px-2 bg-white/10 rounded"
                   >
                     +
                   </button>
                   <button
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => removeFromCart(item._id || item.id)}
                     className="ml-auto text-red-400 text-xs"
                   >
                     Remove
@@ -73,7 +68,10 @@ export default function CartDrawer() {
             <span>Subtotal</span>
             <span>₦{subtotal.toLocaleString()}</span>
           </div>
-          <button className="w-full py-3 rounded-lg bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold">
+          <button
+            onClick={() => { setOpen(false); navigate("/checkout"); }}
+            className="w-full py-3 rounded-lg bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold"
+          >
             Proceed to Checkout
           </button>
         </div>

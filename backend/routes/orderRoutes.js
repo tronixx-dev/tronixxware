@@ -1,25 +1,26 @@
+// routes/orderRoutes.js
 import express from "express";
-import Order from "../models/Order.js"; // ✅ exact file name
-import User from "../models/usermodels.js"; // ✅ exact file name
+import Order from "../models/Order.js";
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Create new order
+// Create order
 router.post("/", protect, async (req, res) => {
+  const { orderItems, totalPrice } = req.body;
+
+  if (!orderItems || orderItems.length === 0)
+    return res.status(400).json({ message: "No order items" });
+
+  if (!totalPrice || totalPrice <= 0)
+    return res.status(400).json({ message: "Invalid total price" });
+
   try {
-    const { orderItems, totalPrice } = req.body;
-
-    if (!orderItems || orderItems.length === 0) {
-      return res.status(400).json({ message: "No order items" });
-    }
-
     const order = new Order({
-      user: req.user._id, // always use _id
+      user: req.user._id,
       orderItems,
       totalPrice,
     });
-
     const createdOrder = await order.save();
     res.status(201).json(createdOrder);
   } catch (error) {

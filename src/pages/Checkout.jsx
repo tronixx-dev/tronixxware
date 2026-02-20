@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useCart } from "../context/CartContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Checkout = () => {
   const { cart, clearCart } = useCart();
@@ -10,13 +11,14 @@ const Checkout = () => {
 
   const [loading, setLoading] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [error, setError] = useState(null);
 
   const totalAmount = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + item.product.price * item.quantity,
     0
   );
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (!user) {
       alert("You must be logged in to place an order!");
       navigate("/login");
@@ -24,13 +26,34 @@ const Checkout = () => {
     }
 
     setLoading(true);
+    setError(null);
 
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const orderItems = cart.map(item => ({
+        product: item.product._id,
+        quantity: item.quantity,
+      }));
+
+      const { data } = await axios.post(
+        "http://localhost:5000/api/orders",
+        {
+          orderItems,
+          totalPrice: totalAmount,
+        },
+        {
+          headers: { Authorization: `Bearer ${user.token}` },
+        }
+      );
+
+      console.log("Order created:", data);
       setOrderSuccess(true);
-      clearCart();
-    }, 1500);
+      clearCart(); // clear cart after successful order
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || "Order failed. Try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (orderSuccess) {
@@ -59,21 +82,20 @@ const Checkout = () => {
       ) : (
         <>
           <ul className="mb-4">
-            {cart.map((item) => (
-              <li
-                key={item.id}
-                className="flex justify-between border-b py-2"
-              >
-                <span>{item.name} x {item.quantity}</span>
-                <span>${(item.price * item.quantity).toFixed(2)}</span>
+            {cart.map(item => (
+              <li key={item.product._id} className="flex justify-between border-b py-2">
+                <span>{item.product.name} x {item.quantity}</span>
+                <span>₦{(item.product.price * item.quantity).toLocaleString()}</span>
               </li>
             ))}
           </ul>
 
           <div className="flex justify-between font-bold mb-6">
             <span>Total:</span>
-            <span>${totalAmount.toFixed(2)}</span>
+            <span>₦{totalAmount.toLocaleString()}</span>
           </div>
+
+          {error && <p className="text-red-600 mb-4">{error}</p>}
 
           <button
             onClick={handleCheckout}
