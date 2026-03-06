@@ -1,8 +1,9 @@
 // src/components/Navbar.jsx
-import { useCartDrawer } from "../context/CartDrawerContext";
-import { useCart } from "../context/CartContext";
+
 import { NavLink, Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext.jsx";
+import { useCart } from "../context/CartContext.jsx";
+import { useCartDrawer } from "../context/CartDrawerContext.jsx";
 
 export default function Navbar({ cartIconRef }) {
   const { setOpen } = useCartDrawer();
@@ -13,7 +14,7 @@ export default function Navbar({ cartIconRef }) {
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleLogout = () => {
-    logout();
+    logout();        // call your auth logout
     navigate("/login");
   };
 

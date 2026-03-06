@@ -12,4 +12,6 @@ export function CartDrawerProvider({ children }) {
   );
 }
 
-export const useCartDrawer = () => useContext(CartDrawerContext);
+export function useCartDrawer() {
+  return useContext(CartDrawerContext);
+}

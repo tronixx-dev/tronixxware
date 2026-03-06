@@ -1,3 +1,5 @@
+// src/App.jsx
+
 import { Routes, Route } from "react-router-dom";
 import { useState, useRef } from "react";
 
@@ -5,16 +7,16 @@ import Navbar from "./components/Navbar.jsx";
 import CategoryBar from "./components/CategoryBar.jsx";
 import Home from "./pages/Home.jsx";
 import Products from "./pages/Products.jsx";
-import Cart from "./pages/Cart.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
-import CartDrawer from "./components/CartDrawer.jsx";
+
 import FlyingImage from "./components/FlyingImage.jsx";
+import CartDrawer from "./components/CartDrawer.jsx";
 
 // Auth
 import Dashboard from "./pages/Dashboard.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
-import Checkout from "./pages/Checkout.jsx";
+
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 export default function App() {
@@ -22,6 +24,7 @@ export default function App() {
   const [flyingImages, setFlyingImages] = useState([]);
   const cartIconRef = useRef(null);
 
+  // Handle flying image animation when adding to cart
   const handleFly = (imgRef) => {
     if (!imgRef.current || !cartIconRef.current) return;
 
@@ -44,7 +47,10 @@ export default function App() {
 
   return (
     <>
+      {/* Navbar with cart icon ref */}
       <Navbar cartIconRef={cartIconRef} />
+
+      {/* Category selector */}
       <CategoryBar onSelectCategory={setSelectedCategory} />
 
       <main className="bg-gray-100 min-h-screen pt-20">
@@ -56,19 +62,10 @@ export default function App() {
           />
           <Route path="/products" element={<Products onFly={handleFly} />} />
           <Route path="/product/:id" element={<ProductDetails onFly={handleFly} />} />
-          <Route path="/cart" element={<Cart />} />
+
+          {/* Authentication */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-
-          {/* Checkout */}
-          <Route
-            path="/checkout"
-            element={
-              <ProtectedRoute>
-                <Checkout />
-              </ProtectedRoute>
-            }
-          />
 
           {/* Protected Dashboard */}
           <Route
@@ -82,8 +79,10 @@ export default function App() {
         </Routes>
       </main>
 
+      {/* Cart Drawer */}
       <CartDrawer />
 
+      {/* Flying Images Animation */}
       {flyingImages.map((f) => (
         <FlyingImage
           key={f.id}

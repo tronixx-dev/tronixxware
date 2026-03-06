@@ -1,11 +1,14 @@
 // src/pages/Home.jsx
-import { useCart } from "../context/CartContext";
+
 import { useEffect, useState, useRef } from "react";
 import { getAllProducts } from "../api/productApi";
 import ProductCard from "../components/ProductCard";
 
+// ✅ Import useCart from your CartContext
+import { useCart } from "../context/CartContext.jsx";
+
 export default function Home({ selectedCategory, onFly }) {
-  const { addToCart } = useCart();
+  const { addToCart } = useCart(); // Now defined
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const productSectionRef = useRef(null);
@@ -29,7 +32,12 @@ export default function Home({ selectedCategory, onFly }) {
     productSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  if (loading) return <div className="text-center mt-20 text-gray-400">Loading products...</div>;
+  if (loading)
+    return (
+      <div className="text-center mt-20 text-gray-400">
+        Loading products...
+      </div>
+    );
 
   return (
     <div className="w-full">
@@ -55,7 +63,10 @@ export default function Home({ selectedCategory, onFly }) {
         className="px-6 py-8 grid gap-6 md:grid-cols-3 lg:grid-cols-4"
       >
         {products
-          .filter((p) => selectedCategory === "All" || p.category === selectedCategory)
+          .filter(
+            (p) =>
+              selectedCategory === "All" || p.category === selectedCategory
+          )
           .map((product) => (
             <ProductCard
               key={product._id}
