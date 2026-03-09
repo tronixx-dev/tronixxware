@@ -1,13 +1,14 @@
 // src/App.jsx
-
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { useState, useRef } from "react";
 
 import Navbar from "./components/Navbar.jsx";
 import CategoryBar from "./components/CategoryBar.jsx";
+
 import Home from "./pages/Home.jsx";
 import Products from "./pages/Products.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
+import Checkout from "./pages/Checkout.jsx";
 
 import FlyingImage from "./components/FlyingImage.jsx";
 import CartDrawer from "./components/CartDrawer.jsx";
@@ -24,46 +25,70 @@ export default function App() {
   const [flyingImages, setFlyingImages] = useState([]);
   const cartIconRef = useRef(null);
 
-  // Handle flying image animation when adding to cart
+  const location = useLocation();
+
+  // Flying image animation when adding to cart
   const handleFly = (imgRef) => {
-    if (!imgRef.current || !cartIconRef.current) return;
+    if (!imgRef?.current || !cartIconRef?.current) return;
 
     const startRect = imgRef.current.getBoundingClientRect();
     const endRect = cartIconRef.current.getBoundingClientRect();
 
-    const newFly = {
+    const fly = {
       id: Date.now(),
       src: imgRef.current.src,
       start: { x: startRect.left, y: startRect.top },
       end: { x: endRect.left, y: endRect.top },
     };
 
-    setFlyingImages((prev) => [...prev, newFly]);
+    setFlyingImages((prev) => [...prev, fly]);
   };
 
   const removeFly = (id) => {
     setFlyingImages((prev) => prev.filter((f) => f.id !== id));
   };
 
+  // Hide category bar on auth pages
+  const hideCategoryBar =
+    location.pathname === "/login" || location.pathname === "/register";
+
   return (
     <>
-      {/* Navbar with cart icon ref */}
+      {/* Navbar */}
       <Navbar cartIconRef={cartIconRef} />
 
-      {/* Category selector */}
-      <CategoryBar onSelectCategory={setSelectedCategory} />
+      {/* Category Selector */}
+      {!hideCategoryBar && (
+        <CategoryBar onSelectCategory={setSelectedCategory} />
+      )}
 
       <main className="bg-gray-100 min-h-screen pt-20">
         <Routes>
           {/* Public Routes */}
           <Route
             path="/"
-            element={<Home selectedCategory={selectedCategory} onFly={handleFly} />}
+            element={
+              <Home
+                selectedCategory={selectedCategory}
+                onFly={handleFly}
+              />
+            }
           />
-          <Route path="/products" element={<Products onFly={handleFly} />} />
-          <Route path="/product/:id" element={<ProductDetails onFly={handleFly} />} />
 
-          {/* Authentication */}
+          <Route
+            path="/products"
+            element={<Products onFly={handleFly} />}
+          />
+
+          <Route
+            path="/product/:id"
+            element={<ProductDetails onFly={handleFly} />}
+          />
+
+          {/* Checkout */}
+          <Route path="/checkout" element={<Checkout />} />
+
+          {/* Auth */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
@@ -82,7 +107,7 @@ export default function App() {
       {/* Cart Drawer */}
       <CartDrawer />
 
-      {/* Flying Images Animation */}
+      {/* Flying Images */}
       {flyingImages.map((f) => (
         <FlyingImage
           key={f.id}
