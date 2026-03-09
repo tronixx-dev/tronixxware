@@ -1,9 +1,8 @@
-// src/api/productApi.js
 import axios from "axios";
 
-const API_URL = "/api/products"; // Vite proxy will forward to backend
+// Point to your backend server
+const API_URL = "http://localhost:5000/api/products";
 
-// Get all products
 export const getAllProducts = async () => {
   try {
     const res = await axios.get(API_URL);
@@ -14,7 +13,6 @@ export const getAllProducts = async () => {
   }
 };
 
-// Get single product by ID
 export const getProductById = async (id) => {
   try {
     const res = await axios.get(`${API_URL}/${id}`);
