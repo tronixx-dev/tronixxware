@@ -13,8 +13,11 @@ app.use(express.json());
 
 // Enable CORS
 app.use(cors({
-  origin: "http://localhost:5173" // allow frontend origin
-  // origin: "*" // alternative for dev
+  origin: [
+    "http://localhost:5173",
+    "https://tronixx-dev-tronixxware.vercel.app"
+  ],
+  credentials: true
 }));
 
 // Connect to MongoDB
@@ -27,4 +30,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes); // optional
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
