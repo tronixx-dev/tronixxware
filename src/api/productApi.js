@@ -1,15 +1,14 @@
 import axios from "axios";
 
-// Point to your backend server
-const API_URL = "http://localhost:5000/api/products";
+const API_URL = "/api/products"; // relative path works locally and on Vercel
 
 export const getAllProducts = async () => {
   try {
     const res = await axios.get(API_URL);
-    return res.data;
+    return Array.isArray(res.data) ? res.data : [];
   } catch (err) {
     console.error("Failed to fetch products:", err);
-    throw err;
+    return [];
   }
 };
 
@@ -19,6 +18,6 @@ export const getProductById = async (id) => {
     return res.data;
   } catch (err) {
     console.error(`Failed to fetch product ${id}:`, err);
-    throw err;
+    return null;
   }
 };

@@ -5,14 +5,10 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 5173, // Optional: your frontend dev port
-    proxy: {
-      // Forward all /api requests to backend
-      "/api": {
-        target: "http://localhost:5000",
-        changeOrigin: true,
-        secure: false,
-      },
-    },
+    port: 5173, // frontend dev port
   },
+  build: {
+    outDir: "dist", // Vercel expects "dist"
+  },
+  base: "./", // ensures proper routing of assets
 });

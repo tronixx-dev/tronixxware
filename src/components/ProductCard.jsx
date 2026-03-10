@@ -2,15 +2,16 @@ import { useRef } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
-
 export default function ProductCard({ product, onFly, addToCart }) {
   const imgRef = useRef(null);
 
   const handleAddToCart = () => {
-    // Ensure quantity is always at least 1
     addToCart({ ...product, quantity: 1 });
     if (onFly) onFly(imgRef);
   };
+
+  const imageSrc = product.images?.[0] || product.image || "/placeholder.png";
+  const productId = product._id || product.id;
 
   return (
     <motion.div
@@ -21,10 +22,10 @@ export default function ProductCard({ product, onFly, addToCart }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Link to={`/product/${product._id}`}>
+      <Link to={`/product/${productId}`}>
         <img
           ref={imgRef}
-          src={product.image || product.images?.[0] || "/placeholder.png"}
+          src={imageSrc}
           alt={product.name || "Product"}
           className="h-40 object-cover mb-3 rounded"
         />

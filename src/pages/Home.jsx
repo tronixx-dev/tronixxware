@@ -1,30 +1,20 @@
-// src/pages/Home.jsx
-
 import { useEffect, useState, useRef } from "react";
 import { getAllProducts } from "../api/productApi";
 import ProductCard from "../components/ProductCard";
-
-// ✅ Import useCart from your CartContext
 import { useCart } from "../context/CartContext.jsx";
 
-export default function Home({ selectedCategory, onFly }) {
-  const { addToCart } = useCart(); // Now defined
+export default function Home({ selectedCategory = "All", onFly }) {
+  const { addToCart } = useCart();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const productSectionRef = useRef(null);
 
-  const fetchProducts = async () => {
-    try {
-      const data = await getAllProducts();
-      setProducts(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchProducts = async () => {
+      const data = await getAllProducts();
+      setProducts(Array.isArray(data) ? data : []);
+      setLoading(false);
+    };
     fetchProducts();
   }, []);
 
@@ -33,11 +23,11 @@ export default function Home({ selectedCategory, onFly }) {
   };
 
   if (loading)
-    return (
-      <div className="text-center mt-20 text-gray-400">
-        Loading products...
-      </div>
-    );
+    return <div className="text-center mt-20 text-gray-400">Loading products...</div>;
+
+  const filteredProducts = products.filter(
+    (p) => selectedCategory === "All" || p.category === selectedCategory
+  );
 
   return (
     <div className="w-full">
@@ -62,19 +52,20 @@ export default function Home({ selectedCategory, onFly }) {
         ref={productSectionRef}
         className="px-6 py-8 grid gap-6 md:grid-cols-3 lg:grid-cols-4"
       >
-        {products
-          .filter(
-            (p) =>
-              selectedCategory === "All" || p.category === selectedCategory
-          )
-          .map((product) => (
+        {filteredProducts.length > 0 ? (
+          filteredProducts.map((product) => (
             <ProductCard
               key={product._id}
               product={product}
-              onFly={onFly}
               addToCart={addToCart}
+              onFly={onFly}
             />
-          ))}
+          ))
+        ) : (
+          <p className="text-gray-400 col-span-full text-center">
+            No products found.
+          </p>
+        )}
       </div>
     </div>
   );

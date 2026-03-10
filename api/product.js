@@ -1,15 +1,10 @@
 // api/products.js
-// This is a Vercel serverless function
-// Returns all products as JSON
-
-import products from "../backend/data/product.js"; // static product data
+import products from "../backend/data/product.js";
 
 export default function handler(req, res) {
   if (req.method === "GET") {
-    // Return all products
     res.status(200).json(products);
   } else {
-    // Only GET is allowed
     res.status(405).json({ message: "Method Not Allowed" });
   }
 }
