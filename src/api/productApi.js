@@ -1,7 +1,10 @@
 import axios from "axios";
 
-const API_URL = "/api/products"; // relative path works locally and on Vercel
+// Use absolute URL in dev, relative in production
+const API_URL =
+  import.meta.env.VITE_API_BASE_URL || "/api/products";
 
+// Fetch all products
 export const getAllProducts = async () => {
   try {
     const res = await axios.get(API_URL);
@@ -12,6 +15,7 @@ export const getAllProducts = async () => {
   }
 };
 
+// Fetch single product
 export const getProductById = async (id) => {
   try {
     const res = await axios.get(`${API_URL}/${id}`);
